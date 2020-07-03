@@ -71,6 +71,7 @@ processFile <- function(file, direct) {
 processDirectory <- function(directory) {
     dta <- lapply(list.files(directory), processDay, direct = directory) %>% myBind()
     write.csv(dta, row.names = F, file = "fb_ads.csv")
+    dta
 }
 
 processDirectory("fb_raw")
