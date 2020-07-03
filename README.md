@@ -1,4 +1,4 @@
-# Forecast 2020
+# ElectionMD Forecast
 
 Repo for the 4 module development process for the 2020 forecast.
 1. Data Acquisition and Pre-Processing
