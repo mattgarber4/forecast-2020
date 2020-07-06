@@ -3,7 +3,7 @@ library(data.table)
 library(stringr)
 library(dplyr)
 
-setwd("data_acquisition")
+setwd("~/forecast-2020/data_acquisition")
 id_match <- fread("fb_id_map.csv")
 
 
