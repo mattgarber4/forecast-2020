@@ -4,3 +4,4 @@
 .Ruserdata
 forecast-2020.Rproj
 creds.txt
+data_acquisition/lambda/docker-compose.yml
