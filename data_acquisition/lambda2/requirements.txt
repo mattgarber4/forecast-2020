@@ -1,0 +1,4 @@
+chromedriver-binary==2.37.0
+selenium==2.53.6
+chromedriver-install==1.0.3
+boto3==1.14.19
