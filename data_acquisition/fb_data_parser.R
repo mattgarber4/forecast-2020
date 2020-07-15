@@ -7,7 +7,6 @@ setwd("~/forecast-2020/data_acquisition")
 id_match <- fread("fb_id_map.csv")
 
 
-
 # delete non-single day files
 f_list <- list.files("fb_raw")
 sapply(paste("fb_raw", f_list[!grepl("yesterday", f_list)], sep = "/"), unlink)
@@ -68,9 +67,11 @@ processFile <- function(file, direct) {
     
 }
 
-processDirectory <- function(directory) {
+processDirectory <- function(directory, write_csv = TRUE) {
     dta <- lapply(list.files(directory), processDay, direct = directory) %>% myBind()
-    write.csv(dta, row.names = F, file = "fb_ads.csv")
+    if (write_csv) {
+        write.csv(dta, row.names = F, file = "fb_ads.csv")
+    }
     dta
 }
 
