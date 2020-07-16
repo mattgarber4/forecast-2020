@@ -1,0 +1,5 @@
+All times eastern
+Daily: 8, 9, 10 AM scrape predictit markets
+Daily: 11:56 AM start ec2
+Daily: 12:00 PM update FB table
+Daily: 1:00 PM stop ec2
