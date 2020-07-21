@@ -1,4 +1,3 @@
-setwd("ec2")
 print(Sys.time())
 
 library(curl)
