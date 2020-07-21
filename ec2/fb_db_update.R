@@ -1,5 +1,6 @@
+setwd("ec2")
 print(Sys.time())
-print('hello')
+
 library(curl)
 library(jsonlite)
 library(myUtils)
@@ -10,6 +11,7 @@ library(stringi)
 library(data.table)
 library(aws.s3)
 library(dplyr)
+
 
 setEnvVarsFromFile('vars.txt')
 
