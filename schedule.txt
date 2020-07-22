@@ -1,5 +1,4 @@
 All times eastern
 Daily: 8, 9, 10 AM scrape predictit markets
-Daily: 11:56 AM start ec2
-Daily: 12:00 PM update FB table
-Daily: 1:00 PM stop ec2
+Daily: 11:56 AM start ec2 from lambda
+Daily: 12:00 PM run master runnner shell script (pulls from github, runs all tasks in the forecast-master.sh script, pings lambda to shut off ec2)
