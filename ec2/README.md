@@ -6,4 +6,4 @@ This is the directory for files specific to the EC2 instances running the foreca
 
 # Steps to add a script to the EC2's daily run: #
 1. Ensure that the file is accessible to the instance by following the above steps.
-2. Add the command to run the script to the master shell script ```ec2/forecast-master.sh```
+2. Add the command to run the script to the master shell script ```ec2/forecast-master.sh```. Paths are rooted at the repo level.
