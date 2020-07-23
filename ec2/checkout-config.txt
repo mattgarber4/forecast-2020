@@ -1,2 +1,4 @@
 ec2/
 !ec2/README.md
+modelling/predictit/pd_utils.R
+modelling/directional_models.R
