@@ -12,7 +12,7 @@ library(aws.s3)
 library(dplyr)
 
 
-setEnvVarsFromFile('vars.txt')
+setEnvVarsFromFile('ec2/vars.txt')
 
 pad_to_length <- function(str, len, pad_char, front = TRUE) {
   while(sum(nchar(str) < len) > 0) {
