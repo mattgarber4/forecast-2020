@@ -1,73 +1,47 @@
-library(myUtils)
-library(DBI)
-library(RPostgres)
-library(dplyr)
+library(tidyr)
 
-smoothParty <- function(party, num_days, date_col) {
-    sapply(as.Date(date_col), 
-           function(d) mean(party[as.Date(date_col) <= d & as.Date(date_col) >= d - num_days + 1])) 
+# calculates the coefficients for price at given day through price nine days before
+# to calculate the linear combination of the 1 day, 4 day, and 7 day deltas in 
+# the three day average with the given weights, which must add to 1
+weightParser <- function(w1, w2, w3) {
+    if (w1 + w2 + w3 != 1) {
+        stop("weights must add to 1")
+    }
+    c(1, w2 + w3, w2 + w3, -1 * c(w1, rep(w2, 3), rep(w3, 3))) / 3
 }
 
-# get one day, four day, and seven day changes
-selectAtDate <- function(dta, date) {
-    dta[dta$date == date, c("state", "dem_smooth", "rep_smooth")]
+
+onePartyWeightedDeltas <- function(dta, party, wgts) {
+    # look at this party
+    d <- dta[, c("state", "date", party)]
+    d <- spread(d, key = date, value = which(colnames(d) == party))
+    
+    # ensure columns in correct order
+    d <- d[, order(colnames(d), decreasing = T)]
+    
+    # apply weights to each row and sum and round
+    return(data.frame(state = d$state, 
+                      delta = apply(wgts * t(as.matrix(d[, -1])), 2, sum) %>% round(4)))
 }
 
-deltas <- function(dta, date) {
-    a <- merge(selectAtDate(dta, date), 
-               selectAtDate(dta, as.Date(date) - 1), 
-               by = 'state',
-               suffixes = c('0', '1'))
-    b  <- merge(selectAtDate(dta, as.Date(date) - 4),
-                selectAtDate(dta, as.Date(date) - 7),
-                by = 'state', 
-                suffixes = c('4', '7'))
+# returns the linear combination of the 1 day, 4 day, and 7 day 
+# changes in the 3 day trailing average of prices for each party in every state
+# using the given weights. Weights must add to 1. Previously, I had a bunch of 
+# reshaping, but here I did a little algebra to speed things up
+predictitWeightedDeltas <- function(date, weight1, weight4, weight7, conn) {
+    wgts <- weightParser(weight1, weight4, weight7)
     
-    out <- merge(a, b, by = 'state')
-    
-    out$date <- date
-    out$dem_delta1 <- out$dem_smooth0 - out$dem_smooth1
-    out$dem_delta4 <- out$dem_smooth0 - out$dem_smooth4
-    out$dem_delta7 <- out$dem_smooth0 - out$dem_smooth7
-    
-    out$rep_delta1 <- out$rep_smooth0 - out$rep_smooth1
-    out$rep_delta4 <- out$rep_smooth0 - out$rep_smooth4
-    out$rep_delta7 <- out$rep_smooth0 - out$rep_smooth7
-    
-    return(out[, c("state", "date", "dem_delta1", "dem_delta4", "dem_delta7",
-                   "rep_delta1", "rep_delta4", "rep_delta7")])
-    
-}
-
-getChangesFromDate <- function(conn, date) {
     q <- paste0("select * from getdays('",
                 as.Date(date) - 9,
                 "', '",
                 date,
                 "')")
     
-    dbGetQuery(conn, q) %>%
-        group_by(state) %>% 
-        mutate(dem_smooth = smoothParty(dem, 3, date),
-               rep_smooth = smoothParty(rep, 3, date)) %>% 
-        ungroup() %>% 
-        deltas(date)
-}
+    dta <- dbGetQuery(conn, q)
     
-
-# returns the linear combination of the 1 day, 4 day, and 7 day 
-# changes in the 3 day trailing average of prices for each party in every state
-# using the given weights. Weights must add to 1
-predictitWeightedDeltas <- function(date, weight1, weight4, weight7, conn) {
-    if (weight1 + weight4 + weight7 != 1) {
-        stop("Weights must add to 1")
-    }
+    merge(onePartyWeightedDeltas(dta, "dem", wgts), 
+          onePartyWeightedDeltas(dta, "rep", wgts), 
+          by = "state", 
+          suffixes = c("_dem", "_rep"))
     
-    dta <- getChangesFromDate(conn, date)
-    
-    return(data.frame(
-        state = dta$state,
-        dem_delta = round(weight1 * dta$dem_delta1 + weight4 * dta$dem_delta4 + weight7 * dta$dem_delta7, 4), 
-        rep_delta = round(weight1 * dta$rep_delta1 + weight4 * dta$rep_delta4 + weight7 * dta$rep_delta7, 4)
-    ))
 }
