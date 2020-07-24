@@ -17,7 +17,7 @@ predictitModel <- setRefClass(
     "predictitModel",
     contains = "directionalModel",
     fields = list(
-        map = "hash"
+        map = "list"
     ),
     methods = list(
         initialize = function(date, weight1, weight4, weight7, translateEst, translateConf, conn) {
