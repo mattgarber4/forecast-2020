@@ -1,4 +1,5 @@
 library(tidyr)
+library(magrittr)
 
 # calculates the coefficients for price at given day through price nine days before
 # to calculate the linear combination of the 1 day, 4 day, and 7 day deltas in 

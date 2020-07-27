@@ -39,7 +39,7 @@ predictitModel <- setRefClass(
             
             for (i in seq_len(nrow(df))) {
                 map[[df$state[i]]] <<- list(est = translateEst(df$tot[i]),
-                                           conf = translateConf(df$conf[i]))
+                                            conf = translateConf(df$conf[i]))
             }
         },
         
