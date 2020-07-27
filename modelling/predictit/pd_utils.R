@@ -5,7 +5,7 @@ library(magrittr)
 # to calculate the linear combination of the 1 day, 4 day, and 7 day deltas in 
 # the three day average with the given weights, which must add to 1
 weightParser <- function(w1, w2, w3) {
-    if (abs(w1 + w2 + w3 - 1) > .001) {
+    if (abs(w1 + w2 + w3 - 1) > .00001) {
         stop("weights must add to 1")
     }
     c(1, w2 + w3, w2 + w3, -1 * c(w1, rep(w2, 3), rep(w3, 3))) / 3
