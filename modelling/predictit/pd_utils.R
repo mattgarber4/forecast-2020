@@ -10,14 +10,40 @@ weightParser <- function(w1, w2, w3) {
     c(1, w2 + w3, w2 + w3, -1 * c(w1, rep(w2, 3), rep(w3, 3))) / 3
 }
 
+fixDate <- function(d, date, idx, dist) {
+    sub <- d[idx, 1 + which(abs(as.Date(colnames(d)[-1]) - as.Date(date)) < dist + 1)]
+    return(apply(sub, 1, function(v) mean(v, na.rm = T)))
+}
+
+# fix for missing data
+imputePrices <- function(d) {
+    for (date in colnames(d)[-1]) {
+        dist <- 2
+        while ((NA %in% d[, date] || NaN %in% d[, date]) && dist < 10) {
+            idx <- which(is.na(d[, date]))
+            d[idx, date] <- fixDate(d, date, idx, dist)
+            dist <- dist + 1
+        }
+    }
+    
+    d
+}
 
 onePartyWeightedDeltas <- function(dta, party, wgts) {
     # look at this party
     d <- dta[, c("state", "date", party)]
     d <- spread(d, key = date, value = which(colnames(d) == party))
     
-    # ensure columns in correct order
-    d <- d[, order(colnames(d), decreasing = T)]
+    if (nrow(d) != 57) {
+        stop("Should be 57 rows -- missing data")
+    }
+    
+    if (ncol(d) != 11) {
+        stop("Should be 10 dates -- missing data")
+    }
+    
+    # ensure columns in correct order and impute missing prices
+    d <- d[, order(colnames(d), decreasing = T)] %>% imputePrices()
     
     # apply weights to each row and sum and round
     return(data.frame(state = d$state, 
