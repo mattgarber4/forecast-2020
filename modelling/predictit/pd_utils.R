@@ -58,7 +58,7 @@ onePartyWeightedDeltas <- function(dta, party, wgts) {
 predictitWeightedDeltas <- function(date, weight1, weight4, weight7, conn) {
     wgts <- weightParser(weight1, weight4, weight7)
     
-    q <- paste0("select * from getdays('",
+    q <- paste0("select * from predictit.getdays('",
                 as.Date(date) - 9,
                 "', '",
                 date,
