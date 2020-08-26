@@ -19,5 +19,3 @@ Repo for the 4 module development process for the 2020 forecast.
 
 ## Diagrams
 ![Single State Prediction Graph](single-state.png)
-
-(c) Matt Garber
