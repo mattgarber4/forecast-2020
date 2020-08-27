@@ -6,3 +6,4 @@ forecast-2020.Rproj
 creds.txt
 data_acquisition/lambda2/docker-compose.yml
 ec2-r-key.pem
+fb_upload.bat
